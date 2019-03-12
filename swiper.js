@@ -21,7 +21,8 @@ export default class Swiper extends React.Component {
     this.position = new Animated.ValueXY({ x: 0, y: 0 })
     this.rotationTopCard = new Animated.Value(0)
     this.rotationBottomCard = new Animated.Value(0)
-    this.cardOffsets = []
+  
+    this.cardOffsets = getInitialOffsets(this.props.offsetAngleMin, this.props.offsetAngleMax, this.props.deckSize)
 
     this.rotateTop = this.rotationTopCard.interpolate({
       inputRange: [
@@ -48,8 +49,7 @@ export default class Swiper extends React.Component {
     }
   }
   componentDidMount() {
-    const { offsetAngleMin, offsetAngleMax, deckSize, rotationMultiplier } = this.props
-    this.cardOffsets = getInitialOffsets(offsetAngleMin, offsetAngleMax, deckSize)
+    const { rotationMultiplier } = this.props
     this.rotationTopCard.setValue(getInterpolatedRotation(this.cardOffsets[0], ROTATION_MAGNITUDE * rotationMultiplier))
     this.rotationBottomCard.setValue(this.cardOffsets[this.cardOffsets.length - 2])
 
@@ -82,7 +82,6 @@ export default class Swiper extends React.Component {
     offsetAngleMax: 4,
     deckSize: 3,
     infiniteSwipe: true,
-    onSwipeStart: () => { },
     onSwiped: () => { },
     onReset: () => { },
     onSwipedAll: () => { },
@@ -135,7 +134,6 @@ export default class Swiper extends React.Component {
 
         const vMagnitude = Math.sqrt(vx * vx + vy * vy)
         if (vMagnitude > validThreshold) {
-          this.props.onSwipeStart(currentIndex)
           this.animateCardOffScreen(finalPosition, finalRotation,
             () => this.onSwipe(currentIndex, cardsData, { vx: vx, vy: vy })
           )
@@ -207,7 +205,7 @@ export default class Swiper extends React.Component {
     this.rotationTopCard.setValue(rotation0)
   }
   onSwipe = (currentIndex, cardsData, velocityVector) => {
-    const { offsetAngleMin, offsetAngleMax, rotationMultiplier, infiniteSwipe, onSwipeStart, onSwiped, onSwipedAll } = this.props
+    const { offsetAngleMin, offsetAngleMax, rotationMultiplier, infiniteSwipe, onSwiped, onSwipedAll } = this.props
     onSwiped(velocityVector)
 
     this.cardOffsets = updateCardOffsets(this.cardOffsets, offsetAngleMin, offsetAngleMax)
@@ -255,10 +253,10 @@ export default class Swiper extends React.Component {
       : isLastCard
         ? this.bottomTransform
         : { transform: [{ rotate: `${this.cardOffsets[deckIndex]}deg` }] }
-
     if (isLastCard) {
       this.animateBottomCard(() => { }, this.cardOffsets[deckIndex])
     }
+
     return <Card
       transform={transform}
       cardsData={cardsData}
@@ -320,7 +318,6 @@ Swiper.propTypes = {
   cardsData: PropTypes.array.isRequired,
   renderCard: PropTypes.func.isRequired,
   infiniteSwipe: PropTypes.bool,
-  onSwipeStart: PropTypes.func,
   onSwiped: PropTypes.func,
   onSwipedAll: PropTypes.func,
   onReset: PropTypes.func,
