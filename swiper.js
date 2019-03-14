@@ -118,7 +118,7 @@ export default class Swiper extends React.Component {
       onPanResponderRelease: (e, gestureState) => {
         const { moveX, moveY, dx, dy, vx, vy } = gestureState
         const { cardCenter, currentIndex } = this.state
-        const { cardsData, velocityThreshold, topCardAnimationDuration } = this.props
+        const { cardsData, velocityThreshold, topCardAnimationDuration, onIndexChanged } = this.props
 
         const validThreshold = velocityThreshold > 0 ? velocityThreshold : 0.4
         const validTopDuration = topCardAnimationDuration > 0 ? topCardAnimationDuration : 1000
@@ -134,6 +134,7 @@ export default class Swiper extends React.Component {
 
         const vMagnitude = Math.sqrt(vx * vx + vy * vy)
         if (vMagnitude > validThreshold) {
+          onIndexChanged(currentIndex+1)
           this.animateCardOffScreen(finalPosition, finalRotation,
             () => this.onSwipe(currentIndex, cardsData, { vx: vx, vy: vy })
           )
@@ -321,6 +322,7 @@ Swiper.propTypes = {
   renderCard: PropTypes.func.isRequired,
   infiniteSwipe: PropTypes.bool,
   onSwiped: PropTypes.func,
+  onIndexChanged: PropTypes.func,
   onSwipedAll: PropTypes.func,
   onReset: PropTypes.func,
   deckSize: (props, propName, componentName) => {
