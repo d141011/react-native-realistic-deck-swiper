@@ -206,7 +206,7 @@ export default class Swiper extends React.Component {
   }
   onSwipe = (currentIndex, cardsData, velocityVector) => {
     const { offsetAngleMin, offsetAngleMax, rotationMultiplier, infiniteSwipe, onSwiped, onSwipedAll } = this.props
-    onSwiped(velocityVector)
+    onSwiped(velocityVector,currentIndex)
 
     this.cardOffsets = updateCardOffsets(this.cardOffsets, offsetAngleMin, offsetAngleMax)
     this.rotationBottomCard.setValue(this.cardOffsets[this.cardOffsets.length - 2])
@@ -284,8 +284,10 @@ export default class Swiper extends React.Component {
     }
     return deck
   }
+  
   render() {
     const { currentIndex } = this.state
+    
     const { deckSize, renderCard, cardsData, style, containerStyle, infiniteSwipe } = this.props
     return (
       <View
@@ -302,16 +304,16 @@ const Card = ({ style, panHandlers, deckIndex, transform, cardsData, cardIndex, 
   const _style = {
     ...style,
     ...styles.card,
-    zIndex: cardsData.length + 100 - deckIndex,
+    zIndex: cardsData.length + 100 - cardIndex,
     ...transform,
   }
   return <Animated.View
-    {...panHandlers}
-    style={_style}
-    onLayout={event => measureAnimatedView(event)}
-  >
-    {renderCard(cardsData[cardIndex])}
-  </Animated.View>
+            {...panHandlers}
+            style={_style}
+            onLayout={event => measureAnimatedView(event)}
+          >
+          {renderCard(cardsData[cardIndex], cardIndex)}
+          </Animated.View>
 }
 
 Swiper.propTypes = {
