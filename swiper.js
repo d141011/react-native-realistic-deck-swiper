@@ -206,7 +206,7 @@ export default class Swiper extends React.Component {
   }
   onSwipe = (currentIndex, cardsData, velocityVector) => {
     const { offsetAngleMin, offsetAngleMax, rotationMultiplier, infiniteSwipe, onSwiped, onSwipedAll } = this.props
-    onSwiped(velocityVector,currentIndex)
+    onSwiped(velocityVector,currentIndex+1)
 
     this.cardOffsets = updateCardOffsets(this.cardOffsets, offsetAngleMin, offsetAngleMax)
     this.rotationBottomCard.setValue(this.cardOffsets[this.cardOffsets.length - 2])
